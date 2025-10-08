@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  ocr:
+    build: ./ocr-api
+    container_name: ocr-service
+    ports:
+      - "8080:8080"   # Coolify reverse proxy ile domain bağlayabilirsin
+    environment:
+      # Tesseract dil dosyası yolu genelde otomatik bulunur. Gerekirse aç:
+      # - TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 1g
