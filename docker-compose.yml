@@ -6,10 +6,8 @@ services:
     container_name: ocr-service
     ports:
       - "9880:9880"
-    environment:
-      # - TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata
     deploy:
       resources:
         limits:
-          cpus: "2.0"
-          memory: 1g
+          cpus: "8.0"
+          memory: 8g
