@@ -5,7 +5,7 @@ services:
     build: ./ocr-api
     container_name: ocr-service
     ports:
-      - "8080:8080"
+      - "9880:9880"
     environment:
       # - TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata
     deploy:
