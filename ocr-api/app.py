@@ -74,14 +74,24 @@ async def ocr_pdf(
         cmd.extend([pdf_path, out_pdf])
         
         proc = run(cmd)
+        
+        # OCRmyPDF başarılı olsa bile stderr'a bilgi mesajları yazabilir
+        # Sadece return code 0 değilse hata döndür
         if proc.returncode != 0:
-            return JSONResponse({"error": proc.stderr.strip()}, status_code=500)
-
+            # Ama önce çıktı dosyası oluşmuş mu kontrol et
+            if not os.path.exists(out_txt) or os.path.getsize(out_txt) == 0:
+                return JSONResponse({"error": f"OCR failed: {proc.stderr.strip()}"}, status_code=500)
+        
         # sidecar'ı oku
         text = ""
         if os.path.exists(out_txt):
             with open(out_txt, "r", encoding="utf-8", errors="ignore") as f:
                 text = f.read()
+        
+        # Eğer text boşsa ve hata varsa hata döndür
+        if not text.strip() and proc.returncode != 0:
+            return JSONResponse({"error": f"No text extracted: {proc.stderr.strip()}"}, status_code=500)
+            
         return {"text": text, "source": "ocr"}
     finally:
         for p in [pdf_path, out_txt, out_pdf]:
