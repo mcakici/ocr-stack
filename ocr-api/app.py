@@ -59,13 +59,20 @@ async def ocr_pdf(
             if text_quick:
                 return {"text": text_quick, "source": "embedded-text"}
 
-        # 2) Gömülü metin yoksa OCRmyPDF ile OCR yap + sidecar text üret
-        # --skip-text: metinli sayfaları atlar, sadece taranmış sayfaları OCR'ler
-        cmd = [
-            "ocrmypdf", "--language", lang, "--sidecar", out_txt,
-            "--skip-text", "--optimize", "0",  # hızlı olsun; kalite gerekirse optimize seviyesini artır
-            pdf_path, out_pdf
-        ]
+        # 2) Gömülü metin yoksa veya force_ocr ise OCRmyPDF ile OCR yap + sidecar text üret
+        cmd = ["ocrmypdf", "--language", lang, "--sidecar", out_txt, "--optimize", "0"]
+        
+        # force_ocr parametresine göre davranış belirle
+        if force_ocr:
+            # Tüm sayfaları OCR'le (embedded text varsa bile üzerine yaz)
+            cmd.append("--force-ocr")
+        else:
+            # Sadece metin olmayan sayfaları OCR'le
+            cmd.append("--skip-text")
+        
+        # PDF dosyalarını ekle
+        cmd.extend([pdf_path, out_pdf])
+        
         proc = run(cmd)
         if proc.returncode != 0:
             return JSONResponse({"error": proc.stderr.strip()}, status_code=500)
