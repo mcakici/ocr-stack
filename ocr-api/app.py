@@ -5,7 +5,7 @@ from concurrent.futures import ProcessPoolExecutor
 import multiprocessing
 
 app = FastAPI(title="OCR Service", version="1.0")
-MAX_WORKERS = 4
+MAX_WORKERS = 6
 
 @app.get("/")
 def health():
